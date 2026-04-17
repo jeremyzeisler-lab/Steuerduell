@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steuer-Quizduell PLUS - Fortgeschritten & Bilanz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .legal-notice {
+            background: rgba(255,68,68,0.15);
+            border: 2px solid rgba(255,68,68,0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .legal-notice strong {
+            color: #ffd74a;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: #fff;
+            color: #667eea;
+            border-color: #fff;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .level-filter {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .level-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .level-btn.active {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border-color: #fff;
+        }
+
+        .quiz-container {
+            background: rgba(255,255,255,0.95);
+            padding: 3rem;
+            border-radius: 25px;
+            box-shadow: 0 15px 60px rgba(0,0,0,0.25);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .question {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+
+        .answers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .answer-btn {
+            background: #fff;
+            border: 4px solid rgba(102,126,234,0.3);
+            padding: 1.5rem;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .answer-btn:hover:not(.disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+            border-color: #667eea;
+        }
+
+        .answer-btn.correct {
+            background: #10b981;
+            color: #fff;
+            border-color: #059669;
+        }
+
+        .answer-btn.wrong {
+            background: #ef4444;
+            color: #fff;
+            border-color: #dc2626;
+        }
+
+        .answer-btn.disabled {
+            cursor: not-allowed;
+        }
+
+        .bilanz-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .bilanz-side {
+            background: rgba(255,255,255,0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
+        .bilanz-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .drop-zone {
+            background: rgba(102,126,234,0.1);
+            border: 3px dashed rgba(102,126,234,0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            min-height: 300px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .drop-zone.dragover {
+            background: rgba(102,126,234,0.2);
+            border-color: #667eea;
+        }
+
+        .drop-zone-label {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .bilanz-item {
+            background: #fff;
+            border: 2px solid rgba(102,126,234,0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            cursor: grab;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .bilanz-item:active {
+            cursor: grabbing;
+        }
+
+        .bilanz-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .bilanz-item.placed {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .item-icon {
+            font-size: 1.5rem;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 0.2rem;
+        }
+
+        .item-desc {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .remove-btn {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .remove-btn:hover {
+            transform: scale(1.1);
+            background: #dc2626;
+        }
+
+        .stats-bar {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            font-weight: 900;
+            font-size: 1.8rem;
+        }
+
+        .btn {
+            background: #fff;
+            color: #667eea;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .explanation {
+            background: rgba(102,126,234,0.1);
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+
+        .explanation-title {
+            font-weight: 900;
+            color: #667eea;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .hidden { display: none !important; }
+        .mb-2 { margin-bottom: 2rem; }
+        .text-center { text-align: center; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .bilanz-container { grid-template-columns: 1fr; }
+            .quiz-container { padding: 2rem 1.5rem; }
+            .question { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Steuer-Quizduell <span style="color: #ffd74a;">PLUS</span></h1>
+            <p class="subtitle">300+ Fragen (Level 1-3) • Bilanz Drag & Drop • Umfassende Erklärungen</p>
+        </header>
+
+        <div class="legal-notice">
+            <strong>⚠️ Rechtlicher Hinweis</strong>
+            Dieses Lernspiel dient ausschließlich der Prüfungsvorbereitung. Die Inhalte ersetzen KEINE individuelle Steuer- oder Rechtsberatung. Rechtsstand: 2026 (EStG, UStG, AO, HGB). Alle Angaben ohne Gewähr. Bei konkreten Steuerfragen: Steuerberater/Rechtsanwalt konsultieren.
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchMode('quiz')" data-mode="quiz">
+                <span>📝</span> Quiz
+            </div>
+            <div class="tab" onclick="switchMode('bilanz')" data-mode="bilanz">
+                <span>📊</span> Bilanz Drag & Drop
+            </div>
+            <div class="tab" onclick="switchMode('stats')" data-mode="stats">
+                <span>📈</span> Statistiken
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-label">Punkte</div>
+                <div class="stat-value" id="totalPoints">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Richtig</div>
+                <div class="stat-value" style="color: #10b981;" id="correctCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Falsch</div>
+                <div class="stat-value" style="color: #ef4444;" id="wrongCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Serie</div>
+                <div class="stat-value" id="streak">0 🔥</div>
+            </div>
+        </div>
+
+        <!-- QUIZ MODE -->
+        <div id="quiz-mode">
+            <div class="level-filter">
+                <div class="level-btn active" onclick="filterLevel('all')" data-level="all">Alle Level</div>
+                <div class="level-btn" onclick="filterLevel(1)" data-level="1">Level 1 - Grundlagen</div>
+                <div class="level-btn" onclick="filterLevel(2)" data-level="2">Level 2 - Fortgeschritten</div>
+                <div class="level-btn" onclick="filterLevel(3)" data-level="3">Level 3 - Experte</div>
+            </div>
+
+            <div class="quiz-container">
+                <div class="question" id="question">Lade data.js um Fragen zu sehen...</div>
+                <div class="answers" id="answers"></div>
+                <div class="explanation hidden" id="explanation">
+                    <div class="explanation-title">Erklärung</div>
+                    <div id="explanationText"></div>
+                </div>
+            </div>
+
+            <div class="text-center mb-2" style="margin-top: 2rem;">
+                <button class="btn btn-primary" onclick="nextQuestion()">Nächste Frage</button>
+                <button class="btn" onclick="resetQuiz()" style="margin-left: 1rem;">Zurücksetzen</button>
+            </div>
+        </div>
+
+        <!-- BILANZ MODE -->
+        <div id="bilanz-mode" class="hidden">
+            <div class="quiz-container mb-2">
+                <div class="question">Ordne die Bilanzposten der richtigen Seite zu (Drag & Drop)</div>
+                <p style="color: #6b7280; margin-top: 1rem;">Ziehe die Posten in die entsprechenden Bereiche</p>
+            </div>
+
+            <div class="bilanz-container">
+                <div class="bilanz-side">
+                    <div class="bilanz-title">AKTIVA</div>
+                    <span class="drop-zone-label">Anlagevermögen</span>
+                    <div class="drop-zone" data-zone="av" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+                    <span class="drop-zone-label">Umlaufvermögen</span>
+                    <div class="drop-zone" data-zone="uv" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+                </div>
+
+                <div class="bilanz-side">
+                    <div class="bilanz-title">PASSIVA</div>
+                    <span class="drop-zone-label">Eigenkapital</span>
+                    <div class="drop-zone" data-zone="ek" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+                    <span class="drop-zone-label">Rückstellungen</span>
+                    <div class="drop-zone" data-zone="rueck" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+                    <span class="drop-zone-label">Verbindlichkeiten</span>
+                    <div class="drop-zone" data-zone="verb" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+                </div>
+            </div>
+
+            <div class="quiz-container" style="margin-top: 2rem;">
+                <div class="question">Verfügbare Bilanzposten:</div>
+                <div id="bilanz-items-pool"></div>
+            </div>
+
+            <div class="text-center mb-2" style="margin-top: 2rem;">
+                <button class="btn btn-success" onclick="checkBilanz()">Lösung prüfen</button>
+                <button class="btn" onclick="resetBilanz()" style="margin-left: 1rem;">Zurücksetzen</button>
+                <button class="btn btn-primary" onclick="nextBilanzTask()" style="margin-left: 1rem;">Neue Aufgabe</button>
+            </div>
+        </div>
+
+        <!-- STATS MODE -->
+        <div id="stats-mode" class="hidden">
+            <div class="quiz-container">
+                <div class="question">Deine Statistiken</div>
+                <div style="color: #1f2937; margin-top: 2rem; line-height: 1.8;">
+                    <p><strong>Gesamtpunkte:</strong> <span id="stats-points">0</span></p>
+                    <p><strong>Richtige Antworten:</strong> <span id="stats-correct">0</span></p>
+                    <p><strong>Falsche Antworten:</strong> <span id="stats-wrong">0</span></p>
+                    <p><strong>Quote:</strong> <span id="stats-ratio">0%</span></p>
+                    <p><strong>Beste Serie:</strong> <span id="stats-best-streak">0</span> 🔥</p>
+                    <p><strong>Level 1 Fragen:</strong> <span id="stats-lvl1">0</span></p>
+                    <p><strong>Level 2 Fragen:</strong> <span id="stats-lvl2">0</span></p>
+                    <p><strong>Level 3 Fragen:</strong> <span id="stats-lvl3">0</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
